@@ -1,10 +1,10 @@
-package com.examen.shiller.rest;
+package com.examen.shiller.controller;
 
 import com.examen.shiller.exception.PersonNotFoundException;
 import com.examen.shiller.httpRequest.AddPersonRequest;
 import com.examen.shiller.httpRequest.ModifyPersonRequest;
 import com.examen.shiller.model.Person;
-import com.examen.shiller.services.PersonServices;
+import com.examen.shiller.service.PersonServices;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,12 +17,13 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
-public class PersonaAPI {
+public class PersonaController {
 
+    private static final String NOT_FOUND=" not found";
     private final PersonServices personServices;
 
     @Autowired
-    public PersonaAPI(PersonServices personServices){
+    public PersonaController(PersonServices personServices){
         this.personServices=personServices;
     }
 
@@ -33,21 +34,23 @@ public class PersonaAPI {
     }
 
     @ApiOperation(value = "Retrieve an existing person")
-    @GetMapping("/person/{person_id}")
-    public ResponseEntity<?> getPersona(@PathVariable Long person_id){
-        Optional<Person> personOptional=personServices.getPersona(person_id);
+    @GetMapping("/person/{personId}")
+    public ResponseEntity<?> getPersona(@PathVariable Long personId){
+        Optional<Person> personOptional;
+        personOptional = personServices.getPersona(personId);
         if(personOptional.isPresent()) return ResponseEntity.ok(personOptional.get());
-        else throw new PersonNotFoundException("PersonId "+person_id+" not found");
+        else throw new PersonNotFoundException("PersonId "+personId+NOT_FOUND);
     }
 
     @ApiOperation(value = "Deletes an existing person")
-    @DeleteMapping("/person/{person_id}")
-    public void deletePersona(@PathVariable Long person_id){
-        Optional<Person> personOptional=personServices.getPersona(person_id);
+    @DeleteMapping("/person/{personId}")
+    public void deletePersona(@PathVariable Long personId){
+        Optional<Person> personOptional;
+        personOptional = personServices.getPersona(personId);
         if(personOptional.isPresent()) {
             personServices.deletePerson(personOptional.get());
         }
-        else throw new PersonNotFoundException("PersonId "+person_id+" not found");
+        else throw new PersonNotFoundException("PersonId "+personId+NOT_FOUND);
     }
 
     @ApiOperation(value = "Creates a new person")
@@ -71,7 +74,7 @@ public class PersonaAPI {
                     .buildAndExpand(person.getPersonId()).toUri();
             return ResponseEntity.created(location).build();
         }else{
-            throw new PersonNotFoundException("PersonId:"+modifyPersonRequest.getPerson_id()+" not found");
+            throw new PersonNotFoundException("PersonId:"+modifyPersonRequest.getPerson_id()+NOT_FOUND);
         }
     }
 

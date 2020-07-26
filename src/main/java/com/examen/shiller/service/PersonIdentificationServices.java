@@ -1,4 +1,4 @@
-package com.examen.shiller.services;
+package com.examen.shiller.service;
 
 import com.examen.shiller.model.Identification;
 import com.examen.shiller.model.Person;

@@ -1,10 +1,10 @@
-package com.examen.shiller.servicesImpl;
+package com.examen.shiller.serviceimpl;
 
 import com.examen.shiller.httpRequest.AddPersonRequest;
 import com.examen.shiller.httpRequest.ModifyPersonRequest;
 import com.examen.shiller.model.Person;
 import com.examen.shiller.repository.PersonRepository;
-import com.examen.shiller.services.PersonServices;
+import com.examen.shiller.service.PersonServices;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,8 +25,8 @@ public class PersonServicesImpl implements PersonServices {
     }
 
     @Override
-    public Optional<Person> getPersona(Long person_id) {
-        return personRepository.findById(person_id);
+    public Optional<Person> getPersona(Long personId) {
+        return personRepository.findById(personId);
     }
 
     @Override

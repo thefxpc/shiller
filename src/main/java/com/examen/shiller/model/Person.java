@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -13,7 +12,6 @@ import java.util.Set;
 
 @Getter
 @Setter
-@ToString
 @Entity
 @Table(name = "person", schema = "person_schema")
 public class Person {
@@ -65,21 +63,15 @@ public class Person {
     String getAlphaNumericString(int n)
     {
         // chose a Character random from this String
-        String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        String alphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                 + "0123456789"
                 + "abcdefghijklmnopqrstuvxyz";
         // create StringBuffer size of AlphaNumericString
         StringBuilder sb = new StringBuilder(n);
         for (int i = 0; i < n; i++) {
-            // generate a random number between
-            // 0 to AlphaNumericString variable length
-            int index
-                    = (int)(AlphaNumericString.length()
-                    * Math.random());
-
             // add Character one by one in end of sb
-            sb.append(AlphaNumericString
-                    .charAt(index));
+            sb.append(alphaNumericString
+                    .charAt((int) (alphaNumericString.length() * Math.random())));
         }
         return sb.toString();
     }

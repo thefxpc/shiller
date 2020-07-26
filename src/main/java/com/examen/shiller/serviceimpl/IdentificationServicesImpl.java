@@ -1,8 +1,8 @@
-package com.examen.shiller.servicesImpl;
+package com.examen.shiller.serviceimpl;
 
 import com.examen.shiller.model.Identification;
 import com.examen.shiller.repository.IdentificationRepository;
-import com.examen.shiller.services.IdentificationServices;
+import com.examen.shiller.service.IdentificationServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

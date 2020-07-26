@@ -1,10 +1,10 @@
-package com.examen.shiller.servicesImpl;
+package com.examen.shiller.serviceimpl;
 
 import com.examen.shiller.model.Identification;
 import com.examen.shiller.model.Person;
 import com.examen.shiller.model.PersonIdentification;
 import com.examen.shiller.repository.PersonaIdentificationRepository;
-import com.examen.shiller.services.PersonIdentificationServices;
+import com.examen.shiller.service.PersonIdentificationServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

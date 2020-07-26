@@ -12,5 +12,5 @@ public interface PersonRepository extends JpaRepository<Person,Long> {
     List<Person> findAll();
 
     @Query("SELECT P FROM Person P WHERE P.active=true AND P.personId=?1")
-    Optional<Person> findById(Long person_id);
+    Optional<Person> findById(Long personId);
 }

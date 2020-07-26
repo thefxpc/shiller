@@ -1,4 +1,4 @@
-package com.examen.shiller.rest;
+package com.examen.shiller.controller;
 
 import com.examen.shiller.exception.PersonIdentificationNotFoundException;
 import com.examen.shiller.exception.PersonNotFoundException;
@@ -7,9 +7,9 @@ import com.examen.shiller.httpRequest.ModifyIdentificationRequest;
 import com.examen.shiller.model.Identification;
 import com.examen.shiller.model.Person;
 import com.examen.shiller.model.PersonIdentification;
-import com.examen.shiller.services.IdentificationServices;
-import com.examen.shiller.services.PersonIdentificationServices;
-import com.examen.shiller.services.PersonServices;
+import com.examen.shiller.service.IdentificationServices;
+import com.examen.shiller.service.PersonIdentificationServices;
+import com.examen.shiller.service.PersonServices;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,16 +21,16 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
-public class IdentificationAPI {
+public class IdentificationController {
 
     private final PersonIdentificationServices personIdentificationServices;
     private final PersonServices personServices;
     private final IdentificationServices identificationServices;
 
 
-    public IdentificationAPI(PersonIdentificationServices personIdentificationServices,
-                             PersonServices personServices,
-                             IdentificationServices identificationServices){
+    public IdentificationController(PersonIdentificationServices personIdentificationServices,
+                                    PersonServices personServices,
+                                    IdentificationServices identificationServices){
         this.personIdentificationServices=personIdentificationServices;
         this.personServices=personServices;
         this.identificationServices=identificationServices;
@@ -45,7 +45,8 @@ public class IdentificationAPI {
     @ApiOperation(value = "Retrieve an specific person identification relation")
     @GetMapping("/identification/{personIdentificationId}")
     public ResponseEntity<?> getIdentification(@PathVariable Long personIdentificationId){
-        Optional<PersonIdentification> personIdentificationOptional=personIdentificationServices.getPersonaIdentification(personIdentificationId);
+        Optional<PersonIdentification> personIdentificationOptional;
+        personIdentificationOptional = personIdentificationServices.getPersonaIdentification(personIdentificationId);
         if(personIdentificationOptional.isPresent()) return ResponseEntity.ok(personIdentificationOptional.get());
         else throw new PersonIdentificationNotFoundException("IdentificationId "+personIdentificationId+" not found");
     }
@@ -53,7 +54,8 @@ public class IdentificationAPI {
     @ApiOperation(value = "Delete an existing person identification relation")
     @DeleteMapping("/identification/{personIdentificationId}")
     public void deleteIdentification(@PathVariable Long personIdentificationId){
-        Optional<PersonIdentification> personIdentificationOptional=personIdentificationServices.getPersonaIdentification(personIdentificationId);
+        Optional<PersonIdentification> personIdentificationOptional;
+        personIdentificationOptional = personIdentificationServices.getPersonaIdentification(personIdentificationId);
         if(personIdentificationOptional.isPresent()) {
             personIdentificationServices.deletePersonaIdentification(personIdentificationOptional.get());
         }
@@ -67,7 +69,7 @@ public class IdentificationAPI {
             if(personOptional.isEmpty()) throw new PersonNotFoundException("PersonId:"+addIdentificationRequest.getPerson_id()+"not found");
 
             Optional<Identification> identificationOptional=identificationServices.getIdentification(addIdentificationRequest.getIdentification_id());
-            if(identificationOptional.isEmpty()) throw new PersonIdentificationNotFoundException("IdentificationId:"+addIdentificationRequest.getIdentification_id()+" not found");
+            if(identificationOptional.isEmpty()) throw new PersonIdentificationNotFoundException(this.notFoundMessage(addIdentificationRequest.getIdentification_id()));
 
             PersonIdentification personIdentification=personIdentificationServices.addPersonIdentification(personOptional.get(),identificationOptional.get(),addIdentificationRequest.getIdentificationNumber());
 
@@ -82,7 +84,7 @@ public class IdentificationAPI {
     public ResponseEntity<?> updateIdentification(@Valid @RequestBody ModifyIdentificationRequest modifyIdentificationRequest){
 
             Optional<PersonIdentification> personIdentificationOptional=personIdentificationServices.getPersonaIdentification(modifyIdentificationRequest.getPersonIdentificationId());
-            if(personIdentificationOptional.isEmpty()) throw new PersonIdentificationNotFoundException("IdentificationId:"+modifyIdentificationRequest.getPersonIdentificationId()+" not found");
+            if(personIdentificationOptional.isEmpty()) throw new PersonIdentificationNotFoundException(this.notFoundMessage(modifyIdentificationRequest.getPersonIdentificationId()));
             else{
                 PersonIdentification personIdentification=personIdentificationServices.updatePersonIdentification(personIdentificationOptional.get(),modifyIdentificationRequest.getIdentificationNumber());
                 URI location = ServletUriComponentsBuilder
@@ -90,6 +92,10 @@ public class IdentificationAPI {
                         .buildAndExpand(personIdentification.getPersonIdentificationId()).toUri();
                 return ResponseEntity.created(location).build();
             }
+    }
+
+    public String notFoundMessage(Long personIdentificationId){
+        return "IdentificationId:"+personIdentificationId+" not found";
     }
 
 }
