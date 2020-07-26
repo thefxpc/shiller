@@ -12,12 +12,15 @@ import javax.validation.constraints.Size;
 
 @Getter
 @Setter
-@ApiModel(description = "Data structure to create a new Person")
-public class AddPersonRequest {
-
+@ApiModel(description = "Data structure to modify an existing person")
+public class ModifyPersonRequest {
+    private static final String PERSON_ID_MESSAGE="The id of the existing person is mandatory";
     private static final String NAME_MESSAGE="Name should have at least 2 characters";
     private static final String AGE_MESSAGE="Age should not be less than 18 and greater than 150";
     private static final String GENDER_MESSAGE="Available gender values are M,H or \" \"";
+
+    @ApiModelProperty(notes = PERSON_ID_MESSAGE)
+    private Long person_id;
 
     @Size(min = 2,max = 250,message = NAME_MESSAGE)
     @ApiModelProperty(notes = NAME_MESSAGE)
@@ -37,5 +40,4 @@ public class AddPersonRequest {
     private boolean isOk() {
         return this.gender.equals("M")|| this.gender.equals("H") || this.gender.equals(" ");
     }
-
 }

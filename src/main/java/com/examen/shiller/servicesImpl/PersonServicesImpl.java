@@ -1,6 +1,7 @@
 package com.examen.shiller.servicesImpl;
 
 import com.examen.shiller.httpRequest.AddPersonRequest;
+import com.examen.shiller.httpRequest.ModifyPersonRequest;
 import com.examen.shiller.model.Person;
 import com.examen.shiller.repository.PersonRepository;
 import com.examen.shiller.services.PersonServices;
@@ -41,10 +42,10 @@ public class PersonServicesImpl implements PersonServices {
     }
 
     @Override
-    public Person editPerson(Person person,AddPersonRequest addPersonRequest) {
-        person.setName(addPersonRequest.getName());
-        person.setAge(addPersonRequest.getAge());
-        person.setGender(addPersonRequest.getGender());
+    public Person editPerson(Person person, ModifyPersonRequest modifyPersonRequest) {
+        person.setName(modifyPersonRequest.getName());
+        person.setAge(modifyPersonRequest.getAge());
+        person.setGender(modifyPersonRequest.getGender());
         return  personRepository.save(person);
     }
 }

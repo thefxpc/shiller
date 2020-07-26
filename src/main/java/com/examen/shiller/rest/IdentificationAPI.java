@@ -1,17 +1,21 @@
 package com.examen.shiller.rest;
 
+import com.examen.shiller.exception.PersonIdentificationNotFoundException;
+import com.examen.shiller.exception.PersonNotFoundException;
 import com.examen.shiller.httpRequest.AddIdentificationRequest;
-import com.examen.shiller.httpResponse.MessageResponse;
+import com.examen.shiller.httpRequest.ModifyIdentificationRequest;
 import com.examen.shiller.model.Identification;
 import com.examen.shiller.model.Person;
 import com.examen.shiller.model.PersonIdentification;
 import com.examen.shiller.services.IdentificationServices;
 import com.examen.shiller.services.PersonIdentificationServices;
 import com.examen.shiller.services.PersonServices;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.Optional;
 
@@ -32,75 +36,60 @@ public class IdentificationAPI {
         this.identificationServices=identificationServices;
     }
 
+    @ApiOperation(value = "Retrieve all the existing person identification relations")
     @GetMapping("/identification")
     public ResponseEntity<?> getAllIdentifications(){
-        try{
-            return ResponseEntity.ok(personIdentificationServices.getIdentifications());
-        }catch (Exception e){
-            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage(),false));
-        }
+        return ResponseEntity.ok(personIdentificationServices.getIdentifications());
     }
 
+    @ApiOperation(value = "Retrieve an specific person identification relation")
     @GetMapping("/identification/{personIdentificationId}")
     public ResponseEntity<?> getIdentification(@PathVariable Long personIdentificationId){
-        try{
-            Optional<PersonIdentification> personIdentificationOptional=personIdentificationServices.getPersonaIdentification(personIdentificationId);
-            if(personIdentificationOptional.isPresent()) return ResponseEntity.ok(personIdentificationOptional.get());
-            else return ResponseEntity.notFound().build();
-        }catch (Exception e){
-            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage(),false));
-        }
+        Optional<PersonIdentification> personIdentificationOptional=personIdentificationServices.getPersonaIdentification(personIdentificationId);
+        if(personIdentificationOptional.isPresent()) return ResponseEntity.ok(personIdentificationOptional.get());
+        else throw new PersonIdentificationNotFoundException("IdentificationId "+personIdentificationId+" not found");
     }
 
+    @ApiOperation(value = "Delete an existing person identification relation")
     @DeleteMapping("/identification/{personIdentificationId}")
-    public ResponseEntity<?> deleteIdentification(@PathVariable Long personIdentificationId){
-        try{
-            Optional<PersonIdentification> personIdentificationOptional=personIdentificationServices.getPersonaIdentification(personIdentificationId);
-            if(personIdentificationOptional.isPresent()) {
-                personIdentificationServices.deletePersonaIdentification(personIdentificationOptional.get());
-                return ResponseEntity.ok().body(new MessageResponse("Identification deleted",true));
-            }
-            else return ResponseEntity.notFound().build();
-        }catch (Exception e){
-            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage(),false));
+    public void deleteIdentification(@PathVariable Long personIdentificationId){
+        Optional<PersonIdentification> personIdentificationOptional=personIdentificationServices.getPersonaIdentification(personIdentificationId);
+        if(personIdentificationOptional.isPresent()) {
+            personIdentificationServices.deletePersonaIdentification(personIdentificationOptional.get());
         }
+        else throw new PersonIdentificationNotFoundException("IdentificationId:"+personIdentificationId+"not found");
     }
 
+    @ApiOperation(value = "Add a new person identification relation")
     @PostMapping("/identification")
-    public ResponseEntity<?> addIdentification(@RequestBody AddIdentificationRequest addIdentificationRequest){
-        try{
+    public ResponseEntity<?> addIdentification(@Valid @RequestBody AddIdentificationRequest addIdentificationRequest){
             Optional<Person> personOptional=personServices.getPersona(addIdentificationRequest.getPerson_id());
-            if(personOptional.isEmpty()) return ResponseEntity.badRequest().body(new MessageResponse("Person not found",false));
+            if(personOptional.isEmpty()) throw new PersonNotFoundException("PersonId:"+addIdentificationRequest.getPerson_id()+"not found");
+
             Optional<Identification> identificationOptional=identificationServices.getIdentification(addIdentificationRequest.getIdentification_id());
-            if(identificationOptional.isEmpty()) return ResponseEntity.badRequest().body(new MessageResponse("Identification type not found",false));
+            if(identificationOptional.isEmpty()) throw new PersonIdentificationNotFoundException("IdentificationId:"+addIdentificationRequest.getIdentification_id()+" not found");
 
             PersonIdentification personIdentification=personIdentificationServices.addPersonIdentification(personOptional.get(),identificationOptional.get(),addIdentificationRequest.getIdentificationNumber());
 
             URI location = ServletUriComponentsBuilder
-                    .fromCurrentRequest().path("/identification/{id}")
-                    .buildAndExpand(personIdentification.getIdentification()).toUri();
+                    .fromCurrentRequest().path("/{id}")
+                    .buildAndExpand(personIdentification.getPersonIdentificationId()).toUri();
             return ResponseEntity.created(location).build();
-
-        }catch (Exception e){
-            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage(),false));
-        }
     }
 
+    @ApiOperation(value = "Modify an existing person identification relation")
     @PutMapping("/identification")
-    public ResponseEntity<?> updateIdentification(@RequestBody AddIdentificationRequest addIdentificationRequest){
-        try{
-            Optional<PersonIdentification> personIdentificationOptional=personIdentificationServices.getPersonaIdentification(addIdentificationRequest.getPersonIdentificationId());
-            if(personIdentificationOptional.isEmpty()) return ResponseEntity.badRequest().body(new MessageResponse("Identification not found",false));
+    public ResponseEntity<?> updateIdentification(@Valid @RequestBody ModifyIdentificationRequest modifyIdentificationRequest){
+
+            Optional<PersonIdentification> personIdentificationOptional=personIdentificationServices.getPersonaIdentification(modifyIdentificationRequest.getPersonIdentificationId());
+            if(personIdentificationOptional.isEmpty()) throw new PersonIdentificationNotFoundException("IdentificationId:"+modifyIdentificationRequest.getPersonIdentificationId()+" not found");
             else{
-                PersonIdentification personIdentification=personIdentificationServices.updatePersonIdentification(personIdentificationOptional.get(),addIdentificationRequest.getIdentificationNumber());
+                PersonIdentification personIdentification=personIdentificationServices.updatePersonIdentification(personIdentificationOptional.get(),modifyIdentificationRequest.getIdentificationNumber());
                 URI location = ServletUriComponentsBuilder
-                        .fromCurrentRequest().path("/identification/{id}")
-                        .buildAndExpand(personIdentification.getIdentification()).toUri();
+                        .fromCurrentRequest().path("/{id}")
+                        .buildAndExpand(personIdentification.getPersonIdentificationId()).toUri();
                 return ResponseEntity.created(location).build();
             }
-        }catch (Exception e){
-            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage(),false));
-        }
     }
 
 }

@@ -10,20 +10,14 @@ import javax.validation.constraints.Size;
 
 @Getter
 @Setter
-@ApiModel(description = "Data structure to add a Identification and person relation")
-public class AddIdentificationRequest {
-
-    private static final String PERSON_ID_MESSAGE="The id of an existing person is mandatory";
-    private static final String IDENTIFICATION_ID_MESSAGE="The id of an existing identification type is mandatory";
+@ApiModel(description = "Data structure to modify an existing Identification and person relation")
+public class ModifyIdentificationRequest {
+    private static final String PERSON_IDENTIFICATION_ID_MESSAGE="In case you want to modify an existing identification this field is mandatory";
     private static final String IDENTIFICATION_NUMBER_MESSAGE="Identification number is mandatory and should be between 2 and 50 characters long";
 
-    @NotNull(message =PERSON_ID_MESSAGE )
-    @ApiModelProperty(notes = PERSON_ID_MESSAGE)
-    private  Long person_id;
-
-    @NotNull(message =IDENTIFICATION_ID_MESSAGE )
-    @ApiModelProperty(notes = IDENTIFICATION_ID_MESSAGE)
-    private  Long identification_id;
+    @ApiModelProperty(notes = PERSON_IDENTIFICATION_ID_MESSAGE)
+    @NotNull(message=PERSON_IDENTIFICATION_ID_MESSAGE)
+    private  Long personIdentificationId;
 
     @NotNull(message =IDENTIFICATION_NUMBER_MESSAGE )
     @Size(min = 2,max =50 ,message = IDENTIFICATION_NUMBER_MESSAGE)

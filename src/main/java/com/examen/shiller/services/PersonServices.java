@@ -1,6 +1,7 @@
 package com.examen.shiller.services;
 
 import com.examen.shiller.httpRequest.AddPersonRequest;
+import com.examen.shiller.httpRequest.ModifyPersonRequest;
 import com.examen.shiller.model.Person;
 
 import java.util.List;
@@ -12,6 +13,6 @@ public interface PersonServices {
     Optional<Person> getPersona(Long person_id);
     void deletePerson(Person person);
     Person addPerson(AddPersonRequest addPersonRequest);
-    Person editPerson(Person person,AddPersonRequest addPersonRequest);
+    Person editPerson(Person person, ModifyPersonRequest modifyPersonRequest);
 
 }

@@ -2,7 +2,6 @@ package com.examen.shiller.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
